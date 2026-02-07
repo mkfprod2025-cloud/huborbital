@@ -53,34 +53,34 @@ export function useStorage() {
     }
   }, []);
 
-  const updateRestaurant = useCallback(async (restaurant: RestaurantInfo) => {
+  const updateRestaurant = useCallback((restaurant: RestaurantInfo) => {
     const newConfig = { ...config, restaurant };
     return saveConfig(newConfig);
   }, [config, saveConfig]);
 
-  const updateBubbles = useCallback(async (bubbles: Bubble[]) => {
+  const updateBubbles = useCallback((bubbles: Bubble[]) => {
     const newConfig = { ...config, bubbles };
     return saveConfig(newConfig);
   }, [config, saveConfig]);
 
-  const addBubble = useCallback(async (bubble: Bubble) => {
+  const addBubble = useCallback((bubble: Bubble) => {
     const newBubbles = [...config.bubbles, bubble];
     return updateBubbles(newBubbles);
   }, [config.bubbles, updateBubbles]);
 
-  const updateBubble = useCallback(async (bubbleId: string, updates: Partial<Bubble>) => {
+  const updateBubble = useCallback((bubbleId: string, updates: Partial<Bubble>) => {
     const newBubbles = config.bubbles.map(b => 
       b.id === bubbleId ? { ...b, ...updates } : b
     );
     return updateBubbles(newBubbles);
   }, [config.bubbles, updateBubbles]);
 
-  const deleteBubble = useCallback(async (bubbleId: string) => {
+  const deleteBubble = useCallback((bubbleId: string) => {
     const newBubbles = config.bubbles.filter(b => b.id !== bubbleId);
     return updateBubbles(newBubbles);
   }, [config.bubbles, updateBubbles]);
 
-  const reorderBubbles = useCallback(async (bubbleIds: string[]) => {
+  const reorderBubbles = useCallback((bubbleIds: string[]) => {
     const newBubbles = bubbleIds
       .map(id => config.bubbles.find(b => b.id === id))
       .filter((b): b is Bubble => b !== undefined)
