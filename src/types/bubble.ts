@@ -1,3 +1,5 @@
+// src/types/bubble.ts
+
 // Palette de couleurs prédéfinie (8 couleurs)
 export const COLOR_PALETTE = [
   { name: 'Or', value: '#FFD700', hex: '#FFD700' },
@@ -51,15 +53,13 @@ export interface Bubble {
   id: string;
   name: string;
   icon: string;
-  // Choix exclusif : afficher texte OU icône sur le bouton
   displayMode: 'text-only' | 'icon-only' | 'text-icon';
   styles: BubbleStyles;
   externalContent: BubbleContent;
   internalContent: BubbleContent;
   isVisible: boolean;
   order: number;
-  // Pour le layout orbital
-  angle?: number; // Position en degrés autour du centre
+  angle?: number;
 }
 
 export interface RestaurantInfo {
@@ -82,7 +82,10 @@ export interface RestaurantInfo {
     twitter?: string;
     website?: string;
   };
-} background?: {
+}
+
+// Configuration du fond d'écran global (mode client)
+export interface PageBackground {
   type: 'color' | 'image';
   color?: string;
   gradient?: boolean;
@@ -90,12 +93,14 @@ export interface RestaurantInfo {
   imageUrl?: string;
   opacity?: number;
   size?: 'cover' | 'contain' | 'repeat';
-};
+}
+
 export interface AppConfig {
   restaurant: RestaurantInfo;
   bubbles: Bubble[];
   isInitialized: boolean;
   lastUpdated: string;
+  background?: PageBackground; // Ajouté ici au niveau global
 }
 
 export const DEFAULT_STYLES: BubbleStyles = {
