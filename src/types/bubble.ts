@@ -82,8 +82,15 @@ export interface RestaurantInfo {
     twitter?: string;
     website?: string;
   };
-}
-
+} background?: {
+  type: 'color' | 'image';
+  color?: string;
+  gradient?: boolean;
+  gradientTo?: string;
+  imageUrl?: string;
+  opacity?: number;
+  size?: 'cover' | 'contain' | 'repeat';
+};
 export interface AppConfig {
   restaurant: RestaurantInfo;
   bubbles: Bubble[];
