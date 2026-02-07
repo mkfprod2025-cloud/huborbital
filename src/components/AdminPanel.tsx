@@ -1,3 +1,5 @@
+import { DEFAULT_STYLES, COLOR_PALETTE } from '@/types/bubble';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useState, useCallback, useEffect } from 'react';
 import type { AppConfig, Bubble } from '@/types/bubble';
 import { DEFAULT_STYLES } from '@/types/bubble';
