@@ -6,6 +6,18 @@ import { AdminPanel } from '@/components/AdminPanel';
 import { FlowerLayout } from '@/components/FlowerLayout';
 import { Button } from '@/components/ui/button';
 import * as FaIcons from 'react-icons/fa';
+import { BackgroundSelector } from "@/components/background-selector"
+
+function App() {
+  return (
+    <div className="p-4">
+      <BackgroundSelector />
+    </div>
+  )
+}
+
+export default App
+
 import './App.css';
 
 type AppMode = 'loading' | 'setup' | 'admin' | 'preview';
