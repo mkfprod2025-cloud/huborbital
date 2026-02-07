@@ -45,7 +45,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
   useEffect(() => {
     const generateQR = async () => {
       try {
-        const url = window.location.origin + window.location.pathname;
+       const url = window.location.origin + '/hub';
         const qrDataUrl = await QRCode.toDataURL(url, {
           width: 400,
           margin: 2,
