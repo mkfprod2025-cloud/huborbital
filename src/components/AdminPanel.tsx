@@ -468,6 +468,178 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                 </div>
               </CardContent>
             </Card>
+                    {/* Background Settings Card */}
+        <Card className="bg-[#1a1a1a] border-[#FFD700]/30 mt-6">
+          <CardHeader>
+            <CardTitle className="text-[#FFD700] flex items-center gap-2">
+              <FaIcons.FaImage className="w-5 h-5" />
+              Fond d'écran (Mode Client)
+            </CardTitle>
+            <CardDescription className="text-[#FFD700]/50">
+              Personnalisez l'arrière-plan de la page publique
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {/* Choix Type */}
+            <div className="space-y-2">
+              <Label className="text-[#FFD700]">Type de fond</Label>
+              <div className="flex gap-2">
+                <Button
+                  type="button"
+                  variant={config.background?.type === 'color' ? 'default' : 'outline'}
+                  onClick={() => onUpdateConfig({
+                    ...config,
+                    background: { ...(config.background || {}), type: 'color', color: config.background?.color || '#000000' }
+                  })}
+                  className={config.background?.type === 'color' ? 'bg-[#FFD700] text-black' : 'border-[#FFD700]/50 text-[#FFD700]'}
+                >
+                  Couleur
+                </Button>
+                <Button
+                  type="button"
+                  variant={config.background?.type === 'image' ? 'default' : 'outline'}
+                  onClick={() => onUpdateConfig({
+                    ...config,
+                    background: { ...(config.background || {}), type: 'image', imageUrl: config.background?.imageUrl || '' }
+                  })}
+                  className={config.background?.type === 'image' ? 'bg-[#FFD700] text-black' : 'border-[#FFD700]/50 text-[#FFD700]'}
+                >
+                  Image
+                </Button>
+              </div>
+            </div>
+
+            {/* Options Couleur */}
+            {config.background?.type === 'color' && (
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <Label className="text-[#FFD700]">Couleur</Label>
+                  <div className="flex gap-2 flex-wrap items-center">
+                    {COLOR_PALETTE.map((color) => (
+                      <button
+                        key={color.value}
+                        onClick={() => onUpdateConfig({
+                          ...config,
+                          background: { ...config.background, color: color.value }
+                        })}
+                        className={`w-8 h-8 rounded-full border-2 ${config.background?.color === color.value ? 'border-white scale-110' : 'border-transparent'}`}
+                        style={{ backgroundColor: color.value }}
+                      />
+                    ))}
+                    <input
+                      type="color"
+                      value={config.background?.color || '#000000'}
+                      onChange={(e) => onUpdateConfig({
+                        ...config,
+                        background: { ...config.background, color: e.target.value }
+                      })}
+                      className="w-8 h-8 rounded-full cursor-pointer"
+                    />
+                  </div>
+                </div>
+                
+                <div className="flex items-center gap-2">
+                  <Switch
+                    checked={config.background?.gradient || false}
+                    onCheckedChange={(checked) => onUpdateConfig({
+                      ...config,
+                      background: { ...config.background, gradient: checked }
+                    })}
+                  />
+                  <Label className="text-[#FFD700]">Dégradé</Label>
+                </div>
+
+                {config.background?.gradient && (
+                  <div className="space-y-2">
+                    <Label className="text-[#FFD700]">Couleur finale du dégradé</Label>
+                    <div className="flex gap-2 flex-wrap">
+                      {COLOR_PALETTE.map((color) => (
+                        <button
+                          key={color.value}
+                          onClick={() => onUpdateConfig({
+                            ...config,
+                            background: { ...config.background, gradientTo: color.value }
+                          })}
+                          className={`w-8 h-8 rounded-full border-2 ${config.background?.gradientTo === color.value ? 'border-white' : 'border-transparent'}`}
+                          style={{ backgroundColor: color.value }}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Options Image */}
+            {config.background?.type === 'image' && (
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <Label className="text-[#FFD700]">Image</Label>
+                  <Input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) {
+                        const reader = new FileReader();
+                        reader.onloadend = () => {
+                          onUpdateConfig({
+                            ...config,
+                            background: { ...config.background, imageUrl: reader.result as string }
+                          });
+                        };
+                        reader.readAsDataURL(file);
+                      }
+                    }}
+                    className="bg-black border-[#FFD700]/30 text-[#FFD700]"
+                  />
+                  {config.background?.imageUrl && (
+                    <div className="mt-2 h-32 rounded-lg overflow-hidden border border-[#FFD700]/30">
+                      <img src={config.background.imageUrl} alt="Bg" className="w-full h-full object-cover" />
+                    </div>
+                  )}
+                </div>
+
+                <div className="space-y-2">
+                  <Label className="text-[#FFD700]">Opacité ({Math.round((config.background?.opacity || 1) * 100)}%)</Label>
+                  <input
+                    type="range"
+                    min="0.1"
+                    max="1"
+                    step="0.1"
+                    value={config.background?.opacity || 1}
+                    onChange={(e) => onUpdateConfig({
+                      ...config,
+                      background: { ...config.background, opacity: parseFloat(e.target.value) }
+                    })}
+                    className="w-full accent-[#FFD700]"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label className="text-[#FFD700]">Affichage</Label>
+                  <Select
+                    value={config.background?.size || 'cover'}
+                    onValueChange={(value: 'cover' | 'contain' | 'repeat') => onUpdateConfig({
+                      ...config,
+                      background: { ...config.background, size: value }
+                    })}
+                  >
+                    <SelectTrigger className="bg-black border-[#FFD700]/50 text-[#FFD700]">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="bg-[#1a1a1a] border-[#FFD700]/50">
+                      <SelectItem value="cover" className="text-[#FFD700]">Couvrir tout</SelectItem>
+                      <SelectItem value="contain" className="text-[#FFD700]">Contenir</SelectItem>
+                      <SelectItem value="repeat" className="text-[#FFD700]">Mosaïque</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
           </TabsContent>
         </Tabs>
       </main>
