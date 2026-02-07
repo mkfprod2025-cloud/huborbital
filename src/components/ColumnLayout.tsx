@@ -124,6 +124,17 @@ export const ColumnLayout: React.FC<ColumnLayoutProps> = ({
   onBubbleClick,
 }) => {
   const [selectedBubble, setSelectedBubble] = useState<Bubble | null>(null);
+  // --- CODE AJOUTÉ POUR LE FAVICON ---
+  useEffect(() => {
+    // On cible la balise créée dans index.html
+    const favicon = document.getElementById('favicon-dynamique') as HTMLLinkElement;
+    
+    // Si la balise existe et que le restaurant a un logo, on change l'image
+    if (favicon && restaurant.logo) {
+      favicon.href = restaurant.logo;
+    }
+  }, [restaurant.logo]); // Se déclenche dès que le logo change
+  // -----------------------------------
 
   const handleBubbleClick = useCallback((bubble: Bubble) => {
     setSelectedBubble(bubble);
