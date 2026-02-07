@@ -7,17 +7,6 @@ import { FlowerLayout } from '@/components/FlowerLayout';
 import { Button } from '@/components/ui/button';
 import * as FaIcons from 'react-icons/fa';
 import { BackgroundSelector } from "@/components/background-selector"
-
-function App() {
-  return (
-    <div className="p-4">
-      <BackgroundSelector />
-    </div>
-  )
-}
-
-export default App
-
 import './App.css';
 
 type AppMode = 'loading' | 'setup' | 'admin' | 'preview';
@@ -80,14 +69,21 @@ function App() {
 
   // Setup mode
   if (mode === 'setup') {
-    return <SetupWizard onComplete={handleSetupComplete} />;
+    return (
+      <div>
+        <SetupWizard onComplete={handleSetupComplete} />
+        <div className="p-4 border-t mt-4">
+          <h2 className="text-xl font-bold mb-4">Test BackgroundSelector</h2>
+          <BackgroundSelector />
+        </div>
+      </div>
+    );
   }
 
   // Preview mode (client view)
   if (mode === 'preview') {
     return (
       <div className="relative">
-        {/* Exit Preview Button */}
         <div className="fixed top-4 right-4 z-50">
           <Button 
             onClick={handleExitPreview}
@@ -109,12 +105,18 @@ function App() {
 
   // Admin mode
   return (
-    <AdminPanel
-      config={config}
-      onUpdateConfig={handleUpdateConfig}
-      onReset={handleReset}
-      onPreview={handlePreview}
-    />
+    <div>
+      <AdminPanel
+        config={config}
+        onUpdateConfig={handleUpdateConfig}
+        onReset={handleReset}
+        onPreview={handlePreview}
+      />
+      <div className="p-4 border-t mt-4 bg-gray-100">
+        <h2 className="text-xl font-bold mb-4">Configuration du fond</h2>
+        <BackgroundSelector />
+      </div>
+    </div>
   );
 }
 
