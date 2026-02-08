@@ -17,24 +17,19 @@ export const Hub: React.FC = () => {
   }, []);
 
   if (!config) {
-    return (
-      <div className="min-h-screen bg-black flex items-center justify-center">
-        <p className="text-[#FFD700]">Aucune configuration trouvée. Veuillez configurer depuis l'administration.</p>
-      </div>
-    );
+    return <div className="min-h-screen bg-black flex items-center justify-center text-[#FFD700]">Chargement...</div>;
   }
 
-  // Détermine le style de fond
-  const bgStyle: React.CSSProperties = {};
-  if (config.restaurant.background?.type === 'image' && config.restaurant.background.imageUrl) {
-    bgStyle.backgroundImage = `url(${config.restaurant.background.imageUrl})`;
-    bgStyle.backgroundSize = 'cover';
-    bgStyle.backgroundPosition = 'center';
-  } else if (config.restaurant.background?.type === 'gradient' && config.restaurant.background.gradientTo) {
-    bgStyle.background = `linear-gradient(to bottom, ${config.restaurant.background.color || '#000'}, ${config.restaurant.background.gradientTo})`;
-  } else {
-    bgStyle.backgroundColor = config.restaurant.background?.color || '#000';
-  }
+  const bgStyle = config.background?.type === 'image' 
+    ? { 
+        backgroundImage: `url(${config.background.imageUrl})`,
+        backgroundSize: config.background.size || 'cover',
+        backgroundRepeat: 'no-repeat',
+        backgroundPosition: 'center',
+      }
+    : { 
+        backgroundColor: config.background?.color || '#000000' 
+      };
 
   return (
     <div className="min-h-screen" style={bgStyle}>
