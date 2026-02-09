@@ -41,6 +41,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
   const [qrCodeUrl, setQrCodeUrl] = useState<string>('');
   const [showQrModal, setShowQrModal] = useState(false);
   const [activeTab, setActiveTab] = useState('buttons');
+  const backgroundExternalUrl = config.background?.imageUrl || '';
 
   useEffect(() => {
     const generateQR = async () => {
@@ -577,24 +578,22 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
               <div className="space-y-4">
                 <div className="space-y-2">
                   <Label className="text-[#FFD700]">Image</Label>
-                  <Input
-                    type="file"
-                    accept="image/*"
-                    onChange={(e) => {
-                      const file = e.target.files?.[0];
-                      if (file) {
-                        const reader = new FileReader();
-                        reader.onloadend = () => {
-                          onUpdateConfig({
-                            ...config,
-                            background: { ...config.background, imageUrl: reader.result as string }
-                          });
-                        };
-                        reader.readAsDataURL(file);
-                      }
-                    }}
-                    className="bg-black border-[#FFD700]/30 text-[#FFD700]"
-                  />
+                  <div className="space-y-2">
+                    <Label className="text-[#FFD700]/70 text-sm">URL de l'image externe</Label>
+                    <Input
+                      type="url"
+                      placeholder="https://exemple.com/fond.jpg"
+                      value={backgroundExternalUrl}
+                      onChange={(e) => onUpdateConfig({
+                        ...config,
+                        background: { ...config.background, imageUrl: e.target.value }
+                      })}
+                      className="bg-black border-[#FFD700]/30 text-[#FFD700]"
+                    />
+                    {config.background?.imageUrl && (
+                      <p className="text-xs text-[#FFD700]/50">Image chargée depuis une URL externe.</p>
+                    )}
+                  </div>
                   {config.background?.imageUrl && (
                     <div className="mt-2 h-32 rounded-lg overflow-hidden border border-[#FFD700]/30">
                       <img src={config.background.imageUrl} alt="Bg" className="w-full h-full object-cover" />
