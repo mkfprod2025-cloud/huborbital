@@ -1,14 +1,23 @@
 import { AdminPanel } from '@/components/AdminPanel';
+import { SetupWizard } from '@/components/SetupWizard';
 import { Hub } from '@/pages/Hub';
-import type { AppConfig } from '@/types/bubble';
+import type { AppConfig, RestaurantInfo } from '@/types/bubble';
 import { useState, useEffect } from 'react';
 
 const defaultConfig: AppConfig = {
   restaurant: {
     name: 'Mon Restaurant',
-    background: { type: 'color', color: '#000000' },
+    description: '',
+    centralContent: { type: 'text-image' },
+    primaryColor: '#FFD700',
+    borderColor: '#FFD700',
+    textColor: '#FFD700',
+    socialLinks: {},
   },
   bubbles: [],
+  isInitialized: false,
+  lastUpdated: new Date().toISOString(),
+  background: { type: 'color', color: '#000000' },
 };
 
 export default function App() {
@@ -32,6 +41,19 @@ export default function App() {
     localStorage.setItem('hubConfig', JSON.stringify(newConfig));
   };
 
+  const handleSetupComplete = (restaurant: RestaurantInfo) => {
+    const { background, ...restaurantInfo } = restaurant;
+    const nextConfig: AppConfig = {
+      ...config,
+      restaurant: restaurantInfo,
+      background: background || config.background,
+      isInitialized: true,
+      lastUpdated: new Date().toISOString(),
+    };
+    setConfig(nextConfig);
+    localStorage.setItem('hubConfig', JSON.stringify(nextConfig));
+  };
+
   const handleReset = () => {
     if (confirm('Tout réinitialiser ?')) {
       setConfig(defaultConfig);
@@ -52,5 +74,9 @@ export default function App() {
   }
 
   // Par défaut : affiche le Hub public
+  if (!config.isInitialized) {
+    return <SetupWizard onComplete={handleSetupComplete} />;
+  }
+
   return <Hub />;
 }

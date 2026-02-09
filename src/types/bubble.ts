@@ -73,6 +73,9 @@ export interface RestaurantInfo {
     imageUrl?: string;
   };
   primaryColor: ColorChoice;
+  borderColor: ColorChoice;
+  textColor: ColorChoice;
+  background?: PageBackground;
   phone?: string;
   email?: string;
   address?: string;

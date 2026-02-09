@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import type { RestaurantInfo } from '@/types/bubble';
+import type { PageBackground, RestaurantInfo } from '@/types/bubble';
 import { COLOR_PALETTE } from '@/types/bubble';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -7,7 +7,6 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import * as FaIcons from 'react-icons/fa';
 
 interface SetupWizardProps {
@@ -21,9 +20,11 @@ export const SetupWizard: React.FC<SetupWizardProps> = ({ onComplete }) => {
     description: '',
     centralContent: { type: 'text-image' },
     primaryColor: '#FFD700',
+    background: { type: 'color', color: '#000000' },
+    borderColor: '#FFD700',
+    textColor: '#FFD700',
     socialLinks: {},
   });
-  const [logoPreview, setLogoPreview] = useState<string | null>(null);
   const [centralImagePreview, setCentralImagePreview] = useState<string | null>(null);
 
   const updateField = useCallback(<K extends keyof RestaurantInfo>(field: K, value: RestaurantInfo[K]) => {
@@ -36,26 +37,6 @@ export const SetupWizard: React.FC<SetupWizardProps> = ({ onComplete }) => {
       centralContent: { ...prev.centralContent, ...updates },
     }));
   }, []);
-
-  const updateSocialLink = useCallback((platform: keyof RestaurantInfo['socialLinks'], value: string) => {
-    setRestaurant(prev => ({
-      ...prev,
-      socialLinks: { ...prev.socialLinks, [platform]: value },
-    }));
-  }, []);
-
-  const handleLogoUpload = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        const result = reader.result as string;
-        setLogoPreview(result);
-        updateField('logo', result);
-      };
-      reader.readAsDataURL(file);
-    }
-  }, [updateField]);
 
   const handleCentralImageUpload = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -104,15 +85,12 @@ export const SetupWizard: React.FC<SetupWizardProps> = ({ onComplete }) => {
         </CardHeader>
         <CardContent>
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="grid w-full grid-cols-3 bg-black border border-[#FFD700]/30">
+            <TabsList className="grid w-full grid-cols-2 bg-black border border-[#FFD700]/30">
               <TabsTrigger value="identity" className="data-[state=active]:bg-[#FFD700] data-[state=active]:text-black text-[#FFD700]">
                 Identité
               </TabsTrigger>
               <TabsTrigger value="central" className="data-[state=active]:bg-[#FFD700] data-[state=active]:text-black text-[#FFD700]">
                 Contenu
-              </TabsTrigger>
-              <TabsTrigger value="contact" className="data-[state=active]:bg-[#FFD700] data-[state=active]:text-black text-[#FFD700]">
-                Contact
               </TabsTrigger>
             </TabsList>
 
@@ -129,56 +107,116 @@ export const SetupWizard: React.FC<SetupWizardProps> = ({ onComplete }) => {
               </div>
 
               <div className="space-y-2">
-                <Label className="text-[#FFD700]">Description</Label>
-                <Textarea
-                  value={restaurant.description}
-                  onChange={(e) => updateField('description', e.target.value)}
-                  placeholder="Décrivez votre restaurant..."
-                  className="bg-black border-[#FFD700]/50 text-[#FFD700] placeholder:text-[#FFD700]/30"
-                  rows={2}
-                />
-              </div>
-
-              <div className="space-y-2">
                 <Label className="text-[#FFD700]">Logo (cercle central)</Label>
                 <Input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleLogoUpload}
-                  className="bg-black border-[#FFD700]/50 text-[#FFD700] file:text-[#FFD700]"
+                  type="url"
+                  placeholder="https://exemple.com/logo.png"
+                  value={restaurant.logo || ''}
+                  onChange={(e) => updateField('logo', e.target.value)}
+                  className="bg-black border-[#FFD700]/50 text-[#FFD700] placeholder:text-[#FFD700]/30"
                 />
-                {logoPreview && (
+                {restaurant.logo && (
                   <div className="mt-4 flex justify-center">
                     <div className="w-24 h-24 rounded-full overflow-hidden border-2 border-[#FFD700]">
-                      <img src={logoPreview} alt="Logo" className="w-full h-full object-cover" />
+                      <img src={restaurant.logo} alt="Logo" className="w-full h-full object-cover" />
                     </div>
                   </div>
                 )}
               </div>
 
-              <div className="space-y-2">
-                <Label className="text-[#FFD700]">Couleur principale</Label>
-                <Select
-                  value={restaurant.primaryColor}
-                  onValueChange={(value) => updateField('primaryColor', value as typeof COLOR_PALETTE[number]['value'])}
-                >
-                  <SelectTrigger className="bg-black border-[#FFD700]/50 text-[#FFD700]">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent className="bg-[#1a1a1a] border-[#FFD700]/50">
-                    {COLOR_PALETTE.map((color) => (
-                      <SelectItem key={color.value} value={color.value} className="text-[#FFD700]">
-                        <div className="flex items-center gap-2">
-                          <div 
-                            className="w-4 h-4 rounded-full border border-white/20" 
-                            style={{ backgroundColor: color.value }}
-                          />
-                          {color.name}
-                        </div>
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+              <div className="space-y-4 rounded-lg border border-[#FFD700]/30 bg-black/50 p-4">
+                <div className="space-y-1">
+                  <Label className="text-[#FFD700]">Fond général (mode client)</Label>
+                  <p className="text-xs text-[#FFD700]/60">
+                    Choisissez une couleur du panel ou une image externe.
+                  </p>
+                </div>
+                <div className="flex gap-2">
+                  <Button
+                    type="button"
+                    variant={restaurant.background?.type === 'color' ? 'default' : 'outline'}
+                    onClick={() => updateField('background', {
+                      ...(restaurant.background || {}),
+                      type: 'color',
+                      color: restaurant.background?.color || '#000000',
+                    } as PageBackground)}
+                    className={restaurant.background?.type === 'color' ? 'bg-[#FFD700] text-black' : 'border-[#FFD700]/50 text-[#FFD700]'}
+                  >
+                    Couleur
+                  </Button>
+                  <Button
+                    type="button"
+                    variant={restaurant.background?.type === 'image' ? 'default' : 'outline'}
+                    onClick={() => updateField('background', {
+                      ...(restaurant.background || {}),
+                      type: 'image',
+                      imageUrl: restaurant.background?.imageUrl || '',
+                    } as PageBackground)}
+                    className={restaurant.background?.type === 'image' ? 'bg-[#FFD700] text-black' : 'border-[#FFD700]/50 text-[#FFD700]'}
+                  >
+                    Image externe
+                  </Button>
+                </div>
+
+                {restaurant.background?.type === 'color' && (
+                  <div className="space-y-3">
+                    <Label className="text-[#FFD700]">Couleur</Label>
+                    <div className="flex flex-wrap gap-2">
+                      {COLOR_PALETTE.map((color) => (
+                        <button
+                          key={color.value}
+                          type="button"
+                          onClick={() => updateField('background', {
+                            ...(restaurant.background || {}),
+                            type: 'color',
+                            color: color.value,
+                          } as PageBackground)}
+                          className={`h-8 w-8 rounded-full border-2 ${
+                            restaurant.background?.color === color.value ? 'border-white scale-110' : 'border-transparent'
+                          }`}
+                          style={{ backgroundColor: color.value }}
+                          aria-label={`Couleur ${color.name}`}
+                        />
+                      ))}
+                      <input
+                        type="color"
+                        value={restaurant.background?.color || '#000000'}
+                        onChange={(e) => updateField('background', {
+                          ...(restaurant.background || {}),
+                          type: 'color',
+                          color: e.target.value,
+                        } as PageBackground)}
+                        className="h-8 w-8 cursor-pointer rounded-full border border-[#FFD700]/50 bg-black"
+                      />
+                    </div>
+                  </div>
+                )}
+
+                {restaurant.background?.type === 'image' && (
+                  <div className="space-y-2">
+                    <Label className="text-[#FFD700]">URL de l'image</Label>
+                    <Input
+                      type="url"
+                      placeholder="https://exemple.com/fond.jpg"
+                      value={restaurant.background?.imageUrl || ''}
+                      onChange={(e) => updateField('background', {
+                        ...(restaurant.background || {}),
+                        type: 'image',
+                        imageUrl: e.target.value,
+                      } as PageBackground)}
+                      className="bg-black border-[#FFD700]/50 text-[#FFD700] placeholder:text-[#FFD700]/30"
+                    />
+                    {restaurant.background?.imageUrl && (
+                      <div className="mt-2 h-24 overflow-hidden rounded-lg border border-[#FFD700]/30">
+                        <img
+                          src={restaurant.background.imageUrl}
+                          alt="Aperçu du fond"
+                          className="h-full w-full object-cover"
+                        />
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
 
               <Button 
@@ -192,6 +230,17 @@ export const SetupWizard: React.FC<SetupWizardProps> = ({ onComplete }) => {
 
             {/* Central Content Tab */}
             <TabsContent value="central" className="space-y-4 mt-4">
+              <div className="space-y-2">
+                <Label className="text-[#FFD700]">Description</Label>
+                <Textarea
+                  value={restaurant.description}
+                  onChange={(e) => updateField('description', e.target.value)}
+                  placeholder="Décrivez votre restaurant..."
+                  className="bg-black border-[#FFD700]/50 text-[#FFD700] placeholder:text-[#FFD700]/30"
+                  rows={2}
+                />
+              </div>
+
               <div className="space-y-2">
                 <Label className="text-[#FFD700]">Type de contenu central</Label>
                 <div className="flex gap-2">
@@ -255,79 +304,42 @@ export const SetupWizard: React.FC<SetupWizardProps> = ({ onComplete }) => {
                 </>
               )}
 
-              <div className="flex gap-2">
-                <Button 
-                  variant="outline"
-                  onClick={() => setActiveTab('identity')}
-                  className="flex-1 border-[#FFD700]/50 text-[#FFD700]"
-                >
-                  <FaIcons.FaArrowLeft className="w-4 h-4 mr-2" />
-                  Précédent
-                </Button>
-                <Button 
-                  onClick={() => setActiveTab('contact')}
-                  className="flex-1 bg-[#FFD700] text-black hover:bg-[#FFA500]"
-                >
-                  Suivant
-                  <FaIcons.FaArrowRight className="w-4 h-4 ml-2" />
-                </Button>
-              </div>
-            </TabsContent>
-
-            {/* Contact Tab */}
-            <TabsContent value="contact" className="space-y-4 mt-4">
-              <div className="space-y-2">
-                <Label className="text-[#FFD700]">Téléphone</Label>
-                <Input
-                  value={restaurant.phone || ''}
-                  onChange={(e) => updateField('phone', e.target.value)}
-                  placeholder="+33 1 23 45 67 89"
-                  className="bg-black border-[#FFD700]/50 text-[#FFD700] placeholder:text-[#FFD700]/30"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label className="text-[#FFD700]">Email</Label>
-                <Input
-                  type="email"
-                  value={restaurant.email || ''}
-                  onChange={(e) => updateField('email', e.target.value)}
-                  placeholder="contact@restaurant.com"
-                  className="bg-black border-[#FFD700]/50 text-[#FFD700] placeholder:text-[#FFD700]/30"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label className="text-[#FFD700]">Adresse</Label>
-                <Textarea
-                  value={restaurant.address || ''}
-                  onChange={(e) => updateField('address', e.target.value)}
-                  placeholder="123 rue de Paris, 75001 Paris"
-                  className="bg-black border-[#FFD700]/50 text-[#FFD700] placeholder:text-[#FFD700]/30"
-                  rows={2}
-                />
-              </div>
-
-              <div className="border-t border-[#FFD700]/20 pt-4">
-                <Label className="text-[#FFD700] mb-2 block">Réseaux sociaux</Label>
-                <div className="space-y-2">
-                  <div className="flex items-center gap-2">
-                    <FaIcons.FaFacebook className="w-5 h-5 text-[#FFD700]" />
-                    <Input
-                      value={restaurant.socialLinks.facebook || ''}
-                      onChange={(e) => updateSocialLink('facebook', e.target.value)}
-                      placeholder="Facebook"
-                      className="bg-black border-[#FFD700]/50 text-[#FFD700] placeholder:text-[#FFD700]/30"
-                    />
+              <div className="space-y-4 rounded-lg border border-[#FFD700]/30 bg-black/50 p-4">
+                <Label className="text-[#FFD700]">Couleurs des bulles</Label>
+                <div className="space-y-3">
+                  <div className="space-y-2">
+                    <Label className="text-[#FFD700]">Bordures</Label>
+                    <div className="flex flex-wrap gap-2">
+                      {COLOR_PALETTE.map((color) => (
+                        <button
+                          key={`border-${color.value}`}
+                          type="button"
+                          onClick={() => updateField('borderColor', color.value)}
+                          className={`h-8 w-8 rounded-full border-2 ${
+                            restaurant.borderColor === color.value ? 'border-white scale-110' : 'border-transparent'
+                          }`}
+                          style={{ backgroundColor: color.value }}
+                          aria-label={`Bordure ${color.name}`}
+                        />
+                      ))}
+                    </div>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <FaIcons.FaInstagram className="w-5 h-5 text-[#FFD700]" />
-                    <Input
-                      value={restaurant.socialLinks.instagram || ''}
-                      onChange={(e) => updateSocialLink('instagram', e.target.value)}
-                      placeholder="Instagram"
-                      className="bg-black border-[#FFD700]/50 text-[#FFD700] placeholder:text-[#FFD700]/30"
-                    />
+                  <div className="space-y-2">
+                    <Label className="text-[#FFD700]">Texte</Label>
+                    <div className="flex flex-wrap gap-2">
+                      {COLOR_PALETTE.map((color) => (
+                        <button
+                          key={`text-${color.value}`}
+                          type="button"
+                          onClick={() => updateField('textColor', color.value)}
+                          className={`h-8 w-8 rounded-full border-2 ${
+                            restaurant.textColor === color.value ? 'border-white scale-110' : 'border-transparent'
+                          }`}
+                          style={{ backgroundColor: color.value }}
+                          aria-label={`Texte ${color.name}`}
+                        />
+                      ))}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -335,7 +347,7 @@ export const SetupWizard: React.FC<SetupWizardProps> = ({ onComplete }) => {
               <div className="flex gap-2">
                 <Button 
                   variant="outline"
-                  onClick={() => setActiveTab('central')}
+                  onClick={() => setActiveTab('identity')}
                   className="flex-1 border-[#FFD700]/50 text-[#FFD700]"
                 >
                   <FaIcons.FaArrowLeft className="w-4 h-4 mr-2" />
