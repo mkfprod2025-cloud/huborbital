@@ -9,6 +9,8 @@ const DEFAULT_CONFIG: AppConfig = {
     logo: undefined,
     centralContent: { type: 'text-image' },
     primaryColor: '#FFD700',
+    borderColor: '#FFD700',
+    textColor: '#FFD700',
     socialLinks: {},
   },
   bubbles: [],

@@ -10,6 +10,10 @@ const defaultConfig: AppConfig = {
     description: '',
     centralContent: { type: 'text-image' },
     primaryColor: '#FFD700',
+< codex/add-background-choice-for-site-leqh3g
+    borderColor: '#FFD700',
+    textColor: '#FFD700',
+> main
     socialLinks: {},
   },
   bubbles: [],
