@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import type { RestaurantInfo } from '@/types/bubble';
+import type { PageBackground, RestaurantInfo } from '@/types/bubble';
 import { COLOR_PALETTE } from '@/types/bubble';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -21,6 +21,7 @@ export const SetupWizard: React.FC<SetupWizardProps> = ({ onComplete }) => {
     description: '',
     centralContent: { type: 'text-image' },
     primaryColor: '#FFD700',
+    background: { type: 'color', color: '#000000' },
     socialLinks: {},
   });
   const [logoPreview, setLogoPreview] = useState<string | null>(null);
@@ -137,6 +138,101 @@ export const SetupWizard: React.FC<SetupWizardProps> = ({ onComplete }) => {
                   className="bg-black border-[#FFD700]/50 text-[#FFD700] placeholder:text-[#FFD700]/30"
                   rows={2}
                 />
+              </div>
+
+              <div className="space-y-4 rounded-lg border border-[#FFD700]/30 bg-black/50 p-4">
+                <div className="space-y-1">
+                  <Label className="text-[#FFD700]">Fond général (mode client)</Label>
+                  <p className="text-xs text-[#FFD700]/60">
+                    Choisissez une couleur du panel ou une image externe.
+                  </p>
+                </div>
+                <div className="flex gap-2">
+                  <Button
+                    type="button"
+                    variant={restaurant.background?.type === 'color' ? 'default' : 'outline'}
+                    onClick={() => updateField('background', {
+                      ...(restaurant.background || {}),
+                      type: 'color',
+                      color: restaurant.background?.color || '#000000',
+                    } as PageBackground)}
+                    className={restaurant.background?.type === 'color' ? 'bg-[#FFD700] text-black' : 'border-[#FFD700]/50 text-[#FFD700]'}
+                  >
+                    Couleur
+                  </Button>
+                  <Button
+                    type="button"
+                    variant={restaurant.background?.type === 'image' ? 'default' : 'outline'}
+                    onClick={() => updateField('background', {
+                      ...(restaurant.background || {}),
+                      type: 'image',
+                      imageUrl: restaurant.background?.imageUrl || '',
+                    } as PageBackground)}
+                    className={restaurant.background?.type === 'image' ? 'bg-[#FFD700] text-black' : 'border-[#FFD700]/50 text-[#FFD700]'}
+                  >
+                    Image externe
+                  </Button>
+                </div>
+
+                {restaurant.background?.type === 'color' && (
+                  <div className="space-y-3">
+                    <Label className="text-[#FFD700]">Couleur</Label>
+                    <div className="flex flex-wrap gap-2">
+                      {COLOR_PALETTE.map((color) => (
+                        <button
+                          key={color.value}
+                          type="button"
+                          onClick={() => updateField('background', {
+                            ...(restaurant.background || {}),
+                            type: 'color',
+                            color: color.value,
+                          } as PageBackground)}
+                          className={`h-8 w-8 rounded-full border-2 ${
+                            restaurant.background?.color === color.value ? 'border-white scale-110' : 'border-transparent'
+                          }`}
+                          style={{ backgroundColor: color.value }}
+                          aria-label={`Couleur ${color.name}`}
+                        />
+                      ))}
+                      <input
+                        type="color"
+                        value={restaurant.background?.color || '#000000'}
+                        onChange={(e) => updateField('background', {
+                          ...(restaurant.background || {}),
+                          type: 'color',
+                          color: e.target.value,
+                        } as PageBackground)}
+                        className="h-8 w-8 cursor-pointer rounded-full border border-[#FFD700]/50 bg-black"
+                      />
+                    </div>
+                  </div>
+                )}
+
+                {restaurant.background?.type === 'image' && (
+                  <div className="space-y-2">
+                    <Label className="text-[#FFD700]">URL de l'image</Label>
+                    <Input
+                      type="url"
+                      placeholder="https://exemple.com/fond.jpg"
+                      value={restaurant.background?.imageUrl || ''}
+                      onChange={(e) => updateField('background', {
+                        ...(restaurant.background || {}),
+                        type: 'image',
+                        imageUrl: e.target.value,
+                      } as PageBackground)}
+                      className="bg-black border-[#FFD700]/50 text-[#FFD700] placeholder:text-[#FFD700]/30"
+                    />
+                    {restaurant.background?.imageUrl && (
+                      <div className="mt-2 h-24 overflow-hidden rounded-lg border border-[#FFD700]/30">
+                        <img
+                          src={restaurant.background.imageUrl}
+                          alt="Aperçu du fond"
+                          className="h-full w-full object-cover"
+                        />
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
 
               <div className="space-y-2">
