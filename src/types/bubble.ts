@@ -73,8 +73,10 @@ export interface RestaurantInfo {
     imageUrl?: string;
   };
   primaryColor: ColorChoice;
+< codex/add-background-choice-for-site-leqh3g
   borderColor: ColorChoice;
   textColor: ColorChoice;
+> main
   background?: PageBackground;
   phone?: string;
   email?: string;
